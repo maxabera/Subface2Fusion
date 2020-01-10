@@ -1,0 +1,8 @@
+
+1. Consturction Plane
+Optimize creation of offset plane in fusion_marking bump. Plane for text sketch.
+now: plane is created for each finger
+future: a construction plane is created only once and reused
+
+
+2. Melted Nodes
