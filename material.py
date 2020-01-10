@@ -1,3 +1,7 @@
+__author__ = "Jiri Manak <jiri.manak@aberamax.com>"
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
+__copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the AGPLv3 License"
+
 from . import app_context as apc
 from . import color_constants as color
 import adsk

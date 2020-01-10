@@ -1,5 +1,6 @@
-#Author-
-#Description-
+__author__ = "Jiri Manak <jiri.manak@aberamax.com>"
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
+__copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the AGPLv3 License"
 
 import adsk.core, adsk.fusion, adsk.cam
 import traceback

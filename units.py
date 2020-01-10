@@ -1,3 +1,7 @@
+__author__ = "Jiri Manak <jiri.manak@aberamax.com>"
+__license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
+__copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the AGPLv3 License"
+
 from enum import Enum, unique
 
 PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286
