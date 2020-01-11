@@ -7,3 +7,10 @@ future: a construction plane is created only once and reused
 2. Melted Nodes
 Overlaping nodes must be joined in one body
 
+
+3. STL Node Export
+
+
+4. GUI
+with settings:
+generate markings ...

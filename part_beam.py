@@ -4,18 +4,19 @@ __copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the A
 
 from . import json_strings as JS
 from . import vector
-from typing import List
 from .part import Part
-from . import units
+from .units import Unit
 from . import matrix
+
+from typing import List
+import math
+
+
 
 class Beam(Part):
 
     def __init__(self):
         super().__init__()
-
-        self.input_distance_units = units.Unit.millimeter
-        self.output_distance_units = units.Unit.centimeter
 
         # core data
 
@@ -30,16 +31,14 @@ class Beam(Part):
         # position
         self._start = [0, 0, 0]
         self._end = [0, 0, 100]
-        self.direction_vector = [100, 100, 0]  # opposit of middle vector of both normal vectors
-        self._face_nv0 = [0, -100, 0]  # normal vector of the face 0
-        self._face_nv1 = [-100, 0, 0]  # normal vector of the face 1
+        self._direction_vector = [100, 100, 0]  # opposit of middle vector of both normal vectors
 
         # dimensions
         self._outer_d = 10
         self._inner_d = 8
 
         # faces
-        self.face_angle = 90
+        self._face_angle = math.pi/2
         self.fidx0 = -1
         self.fidx1 = -1
 
@@ -52,17 +51,20 @@ class Beam(Part):
         self.fii_len1 = 0  # finger1 length
 
         # manufacturing infor
-        self._cart_position = "1A5"
+        self.cart_position = "1A5"
         self.is_ignored = False
 
         # transformation
-        # transformation
-        self.x_base0 = [0, 0, 1]
-        self.x_base1 = [0, 0, 1]
-        self.tm = None  # transformation matrix
+        self._x_base0 = [0, 0, 1]
+        self._x_base1 = [0, 0, 1]
+        self._tm = matrix.identity(4)  # transformation matrix
+
+        # near bolts distance
+        self._inc_distance = 0
+        self._out_distance = 0
 
     def name(self):
-        return "beam_{:03d}_{:03d}".format(self.node_idx0, self.node_idx1)
+        return "BIM{}_{}".format(self.node_idx0, self.node_idx1)
 
     @property
     def length(self):
@@ -76,6 +78,121 @@ class Beam(Part):
     def netto_length(self):  # cut_length
         return self.length
 
+    @property
+    def inc_bolts_distance(self):
+        return self.distance(self._inc_distance)
+
+    def set_inc_bolts_distance(self, value, input_unit: Unit.millimeter):
+        self._inc_distance = self.set_distance(value, input_unit)
+
+    @property
+    def direction(self):
+        return self.vector(self._direction_vector)
+
+    def set_direction(self, direction3d, input_unit=Unit.millimeter):
+        self._direction_vector = self.set_vector(direction3d, input_unit)
+
+    @property
+    def start(self):
+        return self.point_3d(self._start)
+
+    def set_start(self, point3d, input_unit=Unit.millimeter):
+        self._start = self.set_point3d(point3d, input_unit)
+
+    @property
+    def end(self):
+        return self.point_3d(self._end)
+
+    def set_end(self, point3d, input_unit=Unit.millimeter):
+        self._end = self.set_point3d(point3d, input_unit)
+
+    @property
+    def face_angle(self):
+        return self._face_angle
+
+    def set_face_angle(self, angle, input_unit=Unit.radian):
+        self._face_angle = self.set_angle(angle, input_unit)
+
+    @property
+    def outer_d(self):
+        return self.distance(self._outer_d)
+
+    @outer_d.setter
+    def outer_d(self, value):
+        self._outer_d = self.set_distance(value, self.input_distance_units)
+
+    def set_outer_d(self, value, distance_unit=None):
+        if distance_unit is None:
+            distance_unit = self.input_distance_units
+        self._outer_d = self.set_distance(value, distance_unit)
+
+    @property
+    def inner_d(self):
+        return self.distance(self._inner_d)
+
+    @inner_d.setter
+    def inner_d(self, value):
+        self._inner_d = self.set_distance(value, self.input_distance_units)
+
+    def set_inner_d(self, value, distance_unit=None):
+        if distance_unit is None:
+            distance_unit = self.input_distance_units
+        self._inner_d = self.set_distance(value, distance_unit)
+
+    @property
+    def out_bolts_distance(self):
+        return self.distance(self._out_distance)
+
+    def set_out_bolts_distance(self, value, input_unit: Unit.millimeter):
+        self._out_distance = self.set_distance(value, input_unit)
+
+    @property
+    def fii_len0(self):
+        return self.distance(self._fii_len0)
+
+    @fii_len0.setter
+    def fii_len0(self, value):
+        self._fii_len0 = self.set_distance(value, self.input_distance_units)
+
+    def set_fii_len0(self, value, distance_unit=None):
+        if distance_unit is None:
+            distance_unit = self.input_distance_units
+        self._fii_len0 = self.set_distance(value, distance_unit)
+
+    @property
+    def x_base0(self):
+        return self.vector(self._x_base0)
+
+    def set_xbase0(self, direction3d, input_unit=Unit.millimeter):
+        self._x_base0 = self.set_vector(direction3d, input_unit)
+
+    @property
+    def x_base1(self):
+        return self.vector(self._x_base1)
+
+    def set_xbase1(self, direction3d, input_unit=Unit.millimeter):
+        self._x_base1 = self.set_vector(direction3d, input_unit)
+
+    @property
+    def t_matrix(self):
+        return self.matrix(self._tm)
+
+    def set_t_matrix(self, tm, input_unit=Unit.millimeter):
+        self._tm = self.set_matrix(tm, input_unit)
+
+    @property
+    def fii_len1(self):
+        return self.distance(self._fii_len1)
+
+    @fii_len1.setter
+    def fii_len1(self, value):
+        self._fii_len1 = self.set_distance(value, self.input_distance_units)
+
+    def set_fii_len1(self, value, distance_unit=None):
+        if distance_unit is None:
+            distance_unit = self.input_distance_units
+        self._fii_len1 = self.set_distance(value, distance_unit)
+
     def equal(self, new_beam):
         if self.heidx0 == new_beam.inc_heidx and self.heidx1 == new_beam.out_heidx:
             return True
@@ -83,23 +200,9 @@ class Beam(Part):
             return True
         return False
 
-    @property
-    def inner_d(self):
-        return self.distance(self._inner_d)
-
-    @property
-    def outer_d(self):
-        return self.distance(self._outer_d)
-
-    @property
-    def start(self):
-        return self.point_3d(self._start)
-
-    @property
-    def end(self):
-        return self.point_3d(self._end)
 
     def to_dict(self):
+
         face_json = {
 
             JS.ID: self.beam_id,
@@ -111,9 +214,7 @@ class Beam(Part):
 
             JS.BEAM_START: self.start,
             JS.BEAM_END: self.end,
-            JS.DIRECTION: self.direction_vector,
-            JS.FACE_NORMAL0: self._face_nv0,
-            JS.FACE_NORMAL1: self._face_nv1,
+            JS.DIRECTION: self.direction,
 
             JS.INNER_DIAMETER: self.inner_d,
             JS.OUTSIDE_DIAMETER: self.outer_d,
@@ -129,12 +230,12 @@ class Beam(Part):
             JS.FIILEN0: self.fii_len0,
             JS.FIILEN1: self.fii_len1,
             #
-            JS.BEAM_CART_POS: self._cart_position,
+            JS.BEAM_CART_POS: self.cart_position,
             JS.IS_IGNORED: self.is_ignored,
 
             JS.XBASE0: self.x_base0,
             JS.XBASE1: self.x_base1,
-            JS.TRANSFORMATION_MATRIX: self.tm
+            JS.TRANSFORMATION_MATRIX: self.t_matrix
         }
         return face_json
 
@@ -147,7 +248,7 @@ class Beam(Part):
         return dict_list_faces
 
     @staticmethod
-    def create_from_dict(json_beam,  input_distance_units=units.Unit.millimeter ):
+    def create_from_dict(json_beam, distance_units=Unit.millimeter):
         b = Beam()
 
         b.beam_id = json_beam.get(JS.ID, -1)
@@ -157,16 +258,14 @@ class Beam(Part):
         b.heidx0 = json_beam.get(JS.HEIDX0, -1)
         b.heidx1 = json_beam.get(JS.HEIDX1, -1)
 
-        b._start = json_beam.get(JS.BEAM_START, [0, 0, 0])
-        b._end = json_beam.get(JS.BEAM_END, [0, 0, 10])
-        b.direction_vector = json_beam.get(JS.DIRECTION, [0, 0, 10])
-        b._face_nv0 = json_beam.get(JS.FACE_NORMAL0, [0, 0, 10])
-        b._face_nv1 = json_beam.get(JS.FACE_NORMAL1, [0, 0, 10])
+        b.set_start(json_beam.get(JS.BEAM_START, [0, 0, 0]), distance_units)
+        b.set_end(json_beam.get(JS.BEAM_END, [0, 0, 10]), distance_units)
+        b.set_direction(json_beam.get(JS.DIRECTION, [0, 0, 10]), distance_units)
 
-        b._inner_d = json_beam.get(JS.INNER_DIAMETER, 8)
-        b._outer_d = json_beam.get(JS.OUTSIDE_DIAMETER, 10)
+        b.set_inner_d(json_beam.get(JS.INNER_DIAMETER, 8), distance_units)
+        b.set_outer_d(json_beam.get(JS.OUTSIDE_DIAMETER, 10), distance_units)
 
-        b.face_angle = json_beam.get(JS.FACE_ANGLE, 0)
+        b.set_face_angle(json_beam.get(JS.FACE_ANGLE, math.pi/2), Unit.radian)
         b.fidx0 = json_beam.get(JS.FIDX0, -1)
         b.fidx1 = json_beam.get(JS.FIDX1, -1)
 
@@ -179,11 +278,11 @@ class Beam(Part):
         b.fii_len0 = json_beam.get(JS.FIILEN0, -1)
         b.fii_len1 = json_beam.get(JS.FIILEN1, -1)
 
-        b.x_base0 = json_beam.get(JS.XBASE0, [0, 0, 10])
-        b.x_base1 = json_beam.get(JS.XBASE1, [0, 0, 10])
-        b.tm = json_beam.get(JS.TRANSFORMATION_MATRIX, matrix.identity(4))
+        b.set_xbase0(json_beam.get(JS.XBASE0, [0, 0, 10]), distance_units)
+        b.set_xbase1(json_beam.get(JS.XBASE1, [0, 0, 10]), distance_units)
+        b.set_t_matrix(json_beam.get(JS.TRANSFORMATION_MATRIX, matrix.identity(4)), distance_units)
 
-        b._cart_position = json_beam.get(JS.BEAM_CART_POS, '---')
+        b.cart_position = json_beam.get(JS.BEAM_CART_POS, '---')
         b.is_ignored = json_beam.get(JS.IS_IGNORED, 'False')
 
         return b

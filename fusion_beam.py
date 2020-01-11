@@ -50,7 +50,6 @@ def build_object(a_beam: part_beam.Beam, newComp):
     :param newComp:
     :return:
     """
-    dist_unit = app_context.active_attrs.import_distance_units
     radius = a_beam.outer_d / 2
     in_r = a_beam.inner_d /2
     start_pos = a_beam.start
@@ -102,7 +101,7 @@ def build_object(a_beam: part_beam.Beam, newComp):
     start_vector = adsk.core.Vector3D.create(0, 0, 1)
     beam_vector.normalize()
 
-    if not matrix.is_zero(a_beam.tm):
+    if not matrix.is_zero(a_beam.t_matrix):
         # radial distance
         if not start_vector.isEqualTo(beam_vector):
             transform = adsk.core.Matrix3D.create()

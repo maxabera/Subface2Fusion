@@ -14,6 +14,18 @@ class Part:
         self.input_angle_units = Unit.radian
         self.output_angle_units = Unit.degree
 
+    def set_output_units(self, distance=None, angle=None):
+        if distance is not None:
+            self.output_distance_units = distance
+        if angle is not None:
+            self.output_angle_units = angle
+
+    def set_input_units(self, distance=None, angle=None):
+        if distance is not None:
+            self.input_distance_units = distance
+        if angle is not None:
+            self.input_angle_units = angle
+
     def distance(self, value):
         d = Unit.distance(value, self.input_distance_units, self.output_distance_units)
         return d
@@ -58,6 +70,10 @@ class Part:
 
     def set_distance(self, value, distance_unit):
         v = Unit.distance(value, distance_unit, self.input_distance_units)
+        return v
+
+    def set_angle(self, value, angle_unit):
+        v = Unit.angle(value, angle_unit, self.input_angle_units)
         return v
 
     @staticmethod
