@@ -1,6 +1,8 @@
 __author__ = "Jiri Manak <jiri.manak@aberamax.com>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 __copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the AGPLv3 License"
+__version__= "0.1"
+__last_update__="2020-01-13"
 
 import adsk.core, adsk.fusion, adsk.cam
 import traceback
@@ -11,7 +13,7 @@ from . import file_import
 from . import fusion_node
 from . import fusion_beam
 from . import fusion_face
-from . import fusion_hole
+
 
 
 def run(context):

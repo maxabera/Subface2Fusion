@@ -3,13 +3,15 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 __copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the AGPLv3 License"
 
 from typing import List
-from . import part_finger
+from .part_finger import Finger
 from . import pad
 from . import finger_bridge
+from .part_finger import Finger
 from . import matrix
 
 from .part import Part
 from .part_node_marking import NodeMarking
+from .units import Unit
 from . import units
 
 
@@ -47,6 +49,14 @@ class Node(Part):
             list_of_int.append(int(item))
         return list_of_int
 
+    @staticmethod
+    def create_list_from_dict(dict_object_list):
+        list_of_objects = list()
+        for dh in dict_object_list:
+            h = Node.create_from_dict(dh)
+            list_of_objects.append(h)
+        return list_of_objects
+
     def add_node_marking(self, node_marking):
         self.list_of_node_markings.append(node_marking)
 
@@ -57,7 +67,7 @@ class Node(Part):
             Node.VALENCY: int(self.valency),
             Node.REAL_VALENCY: int(self.real_valency),
             Node.IS_MELTED: self.is_melted,
-            Node.FINGERS: Part.create_list_dict(self.list_of_fingers),
+            Node.FINGERS: Finger.create_list_dict(self.list_of_fingers),
             Node.PADS: pad.Pad.create_list_dict(self.list_of_pads),
             Node.FINGER_BRIDGES: finger_bridge.FingerBridge.create_list_dict(self.list_of_fibridges),
             Node.NODE_MARKINGS: NodeMarking.create_list_dict(self.list_of_node_markings)
@@ -65,35 +75,18 @@ class Node(Part):
         return node_json
 
     @staticmethod
-    def create_list_dict(list_of_nodes: List['Node']):
-        dict_list_nodes = list()
-        for json_node in list_of_nodes:
-            dict_node = json_node.to_dict()
-            dict_list_nodes.append(dict_node)
-        return dict_list_nodes
-
-    @staticmethod
-    def create_from_dict(json_obj, input_distance_units=units.Unit.millimeter):
+    def create_from_dict(json_obj, distance_units=Unit.millimeter):
 
         new_object = Node()
-        new_object.input_distance_units = input_distance_units
-
         new_object.node_id = json_obj.get(Node.NODE_IDX, new_object.node_id)
         new_object.valency = json_obj.get(Node.VALENCY, new_object.valency)
         new_object.real_valency = json_obj.get(Node.REAL_VALENCY, new_object.real_valency)
-
-        new_object.list_of_fingers = part_finger.Finger.create_list_from_dict(json_obj[Node.FINGERS])
+        new_object.list_of_fingers = Finger.create_list_from_dict(json_obj[Node.FINGERS])
         new_object.list_of_pads = pad.Pad.create_list_from_dict(json_obj[Node.PADS])
         new_object.list_of_fibridges = finger_bridge.FingerBridge.create_list_from_dict(json_obj[Node.FINGER_BRIDGES])
-        new_object.list_of_node_markings = NodeMarking.create_list_from_dict(json_obj[Node.NODE_MARKINGS])
+        new_object.list_of_node_markings = NodeMarking.create_list_dict(json_obj[Node.NODE_MARKINGS])
 
         return new_object
 
-    @staticmethod
-    def create_list_from_dict(dict_node_list):
-        list_of_nodes = list()
-        for dh in dict_node_list:
-            h = Node.create_from_dict(dh)
-            list_of_nodes.append(h)
-        return list_of_nodes
+
 

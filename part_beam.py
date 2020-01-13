@@ -31,7 +31,7 @@ class Beam(Part):
         # position
         self._start = [0, 0, 0]
         self._end = [0, 0, 100]
-        self._direction_vector = [100, 100, 0]  # opposit of middle vector of both normal vectors
+        self._direction_vector = [100, 100, 0]  # opposite of middle vector of both normal vectors
 
         # dimensions
         self._outer_d = 10
@@ -64,7 +64,7 @@ class Beam(Part):
         self._out_distance = 0
 
     def name(self):
-        return "BIM{}_{}".format(self.node_idx0, self.node_idx1)
+        return "beam{}_{}".format(self.node_idx0, self.node_idx1)
 
     @property
     def length(self):

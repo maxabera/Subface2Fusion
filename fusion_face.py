@@ -65,7 +65,7 @@ def build_object(a_face, newComp):
     occ.appearance = material.plastic_abs_appearance(color_constants.LIMEGREEN)
 
     face_name = app_context.active_attrs.model_id
-    occ.component.name = '{}_{:03d}'.format(face_name, a_face.fidx)
+    occ.component.name = 'face_{:03d}'.format(a_face.fidx)
 
 
     # make_holes(a_face, obj)

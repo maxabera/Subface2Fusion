@@ -51,7 +51,8 @@ class Bolt(Part):
     THICKNESS_NUT = 'thickness_nut'
 
     TYPE = 'type'
-    DISTANCE_TO_NEXT = 'bolt_distance_to_next'  # distance to following bolt within same face
+    DISTANCE_TO_NEXT_INC = 'bolt_distance_to_next_out'  # distance to following bolt within same face
+    DISTANCE_TO_NEXT_OUT = 'bolt_distance_to_next_inc'  # distance to following bolt within same face
 
     INC_DELTA = 'inc_delta'
     OUT_DELTA = 'out_delta'
@@ -81,7 +82,9 @@ class Bolt(Part):
         self._direction = [0, 0, 1]  # vector of the main axis (usualy face normal)
         self._x_base = [1, 0, 0]     # usually paralel with middle between edges
         self._tm = matrix.identity(4)
-        self._dist_to_next = -1 # distance to next bolt within a face
+        self._dist_to_next_out = -1 # distance to next bolt within a face
+        self._dist_to_next_inc = -1 # distance to next bolt within a face
+
         self._inc_delta = 0
         self._out_delta = 0
 
@@ -161,6 +164,20 @@ class Bolt(Part):
     def min_length(self):
         return self.th_wall + self.th_pad + self.th_nut
 
+    @property
+    def distance_to_next_inc(self):
+        return self.distance(self._dist_to_next_inc)
+
+    def set_dist_to_next_inc(self, dist, input_unit=Unit.millimeter):
+        self._dist_to_next_inc = self.set_distance(dist, input_unit)
+
+    @property
+    def distance_to_next_out(self):
+        return self.distance(self._dist_to_next_out)
+
+    def set_dist_to_next_out(self, dist, input_unit=Unit.millimeter):
+        self._dist_to_next_out = self.set_distance(dist, input_unit)
+
     def set_trunk_diameter(self, diameter, input_unit=Unit.millimeter):
         self._trunk_diameter = self.set_distance(diameter, input_unit)
 
@@ -181,9 +198,6 @@ class Bolt(Part):
 
     def set_xbase(self, direction3d, input_unit=Unit.millimeter):
         self._x_base = self.set_vector(direction3d, input_unit)
-
-    def set_dist_to_next(self, dist, input_unit=Unit.millimeter):
-        self._dist_to_next = self.set_distance(dist, input_unit)
 
     def set_inc_delta(self, dist, input_unit=Unit.millimeter):
         self._inc_delta = self.set_distance(dist, input_unit)
@@ -225,7 +239,8 @@ class Bolt(Part):
             Bolt.DIRECTION: self.direction,
             Bolt.X_BASE: self.x_base,
             Bolt.TRANSFORMATION_MATRIX: self.t_matrix,
-            Bolt.DISTANCE_TO_NEXT: self._dist_to_next,
+            Bolt.DISTANCE_TO_NEXT_INC: self.distance_to_next_inc,
+            Bolt.DISTANCE_TO_NEXT_OUT: self.distance_to_next_out,
             Bolt.INC_DELTA: self.inc_delta,
             Bolt.OUT_DELTA: self.out_delta,
 
@@ -271,8 +286,8 @@ class Bolt(Part):
         new_object.sqn_face = json_obj.get(Bolt.BOLT_IN_FACE_IDX, new_object.sqn_face)
         new_object.sqn_coplanar_face = json_obj.get(Bolt.BOLT_IN_COPLANAR_FACE_IDX, new_object.sqn_coplanar_face)
         new_object.sqn_bolts = json_obj.get(Bolt.BOLT_ID, new_object.sqn_bolts)
-        new_object.inc_heidx = json_obj.get(Bolt.INC_DELTA, new_object.inc_heidx)
-        new_object.out_heidx = json_obj.get(Bolt.OUT_DELTA, new_object.out_heidx)
+        new_object.inc_heidx = json_obj.get(Bolt.INC_HEIDX, new_object.inc_heidx)
+        new_object.out_heidx = json_obj.get(Bolt.OUT_HEIDX, new_object.out_heidx)
 
         tmp = BoltType[json_obj.get(Bolt.TYPE, new_object.bolt_type.name)]
         if tmp is not None:
@@ -283,7 +298,9 @@ class Bolt(Part):
         new_object.set_position_at_face(json_obj.get(Bolt.FACE_POSITION, new_object._face_pos), distance_units)
         new_object.set_direction(json_obj.get(Bolt.DIRECTION, new_object._direction), distance_units)
         new_object.set_xbase(json_obj.get(Bolt.X_BASE, new_object._x_base), distance_units)
-        new_object.set_dist_to_next(json_obj.get(Bolt.DISTANCE_TO_NEXT, new_object._dist_to_next), distance_units)
+        new_object.set_dist_to_next_inc(json_obj.get(Bolt.DISTANCE_TO_NEXT_INC, new_object._dist_to_next_inc), distance_units)
+        new_object.set_dist_to_next_out(json_obj.get(Bolt.DISTANCE_TO_NEXT_OUT, new_object._dist_to_next_out), distance_units)
+
         new_object.set_t_matrix(json_obj.get(Bolt.TRANSFORMATION_MATRIX, new_object._tm), distance_units)
         new_object.set_inc_delta(json_obj.get(Bolt.INC_DELTA, new_object._out_delta), distance_units)
         new_object.set_out_delta(json_obj.get(Bolt.OUT_DELTA, new_object._inc_delta), distance_units)
@@ -299,9 +316,9 @@ class Bolt(Part):
         new_object.set_th_pad(json_obj.get(Bolt.THICKNESS_PAD, new_object._th_pad), distance_units)
 
         # hole 2
-        new_object._tail_diameter = json_obj.get(Bolt.TAIL_DIAMETER, new_object._tail_diameter)
-        new_object._trunk_diameter = json_obj.get(Bolt.TRUNK_DIAMETR, new_object._trunk_diameter)
-        new_object._metric_diameter = json_obj.get(Bolt.METRIC_DIA, new_object._metric_diameter)
+        new_object.set_tail_diameter(json_obj.get(Bolt.TAIL_DIAMETER, new_object._tail_diameter), distance_units)
+        new_object.set_trunk_diameter(json_obj.get(Bolt.TRUNK_DIAMETR, new_object._trunk_diameter), distance_units)
+        new_object.set_metric_diameter(json_obj.get(Bolt.METRIC_DIA, new_object._metric_diameter), distance_units)
 
         # flags 2
         new_object.is_inside = json_obj.get(Bolt.IS_INSIDE, new_object.is_inside)

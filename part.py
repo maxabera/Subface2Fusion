@@ -5,7 +5,6 @@ __copyright__ = "Copyright (C) 2020 Subface2Fusion Released under terms of the A
 from .units import Unit
 from typing import List
 
-
 class Part:
 
     def __init__(self):
@@ -84,8 +83,6 @@ class Part:
         :return:
         """
         list_of_part_dict = list()
-        for _part in list_of_nodes:
-            dict_hole = _part.to_dict()
-            list_of_part_dict.append(dict_hole)
+
         return list_of_part_dict
 
