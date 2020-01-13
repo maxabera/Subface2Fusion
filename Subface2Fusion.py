@@ -19,7 +19,6 @@ from . import fusion_face
 def run(context):
 
     try:
-        print("zaciatok")
         app_context.app = adsk.core.Application.get()
         app_context.ui = app_context.app.userInterface
 
